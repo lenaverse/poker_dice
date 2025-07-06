@@ -151,6 +151,7 @@ def calculate_points(dice_hand: list[int]) -> int:
 
 
 def determine_winner(player_hand: list[int], ai_hand: list[int]) -> str:
+
     player_points = calculate_points(player_hand)
     ai_points = calculate_points(ai_hand)
 
@@ -158,11 +159,61 @@ def determine_winner(player_hand: list[int], ai_hand: list[int]) -> str:
     if player_points > ai_points:
         return results + WIN_MESSAGE
     if player_points == ai_points:
-        return results + DRAW_MESSAGE
-    return results + DRAW_MESSAGE
+        return results + handle_draw(player_hand, ai_hand)
+    return results + LOSE_MESSAGE
+
+
+def handle_draw(player_hand: list[int], ai_hand: list[int]) -> str:
+    if player_hand.sort() == ai_hand.sort():
+        # BEING USED FOR DEBUGGING
+        print(f"PLAYER HAND = {player_hand.sort()}")
+        print(f"AI HAND = {ai_hand.sort()}")
+        #
+        return DRAW_MESSAGE
+
+    player_points = calculate_points(player_hand)
+
+    if player_points >= 30:
+        if ai_hand.sort()[-1] > player_hand.sort()[-1]:
+            return LOSE_MESSAGE
+        return WIN_MESSAGE
+
+    if player_points >= 15:
+        player_hand_new = [
+            roll for roll in player_hand if player_hand.count(roll) == 3]
+        ai_hand_new = [roll for roll in ai_hand if ai_hand.count(roll) == 3]
+        if ai_hand_new[0] > player_hand_new[0]:
+            return LOSE_MESSAGE
+        elif (ai_hand_new == player_hand_new) and len(set(player_hand)) == 2:
+            player_hand_remaining = [
+                roll for roll in player_hand if roll not in player_hand_new]
+            ai_hand_remaining = [
+                roll for roll in ai_hand if roll not in ai_hand_new]
+            if ai_hand_remaining[0] > player_hand_remaining[0]:
+                return LOSE_MESSAGE
+        return WIN_MESSAGE
+
+    if player_points >= 2:
+        player_hand_new = [
+            roll for roll in player_hand if player_hand.count(roll) == 2]
+        ai_hand_new = [
+            roll for roll in ai_hand if ai_hand.count(roll) == 2]
+        if len(set(player_hand)) == 4:
+            if ai_hand_new[0] > player_hand_new[0]:
+                return LOSE_MESSAGE
+            return WIN_MESSAGE
+        if ai_hand_new.sort()[-1] > player_hand_new.sort()[-1]:
+            return LOSE_MESSAGE
+        return WIN_MESSAGE
+
+    if ai_hand.sort()[-1] > player_hand.sort()[-1]:
+        return LOSE_MESSAGE
+    return WIN_MESSAGE
 
 
 def play() -> None:
+    global user_hand
+    global ai_hand
 
     is_player_turn()
     is_ai_turn()

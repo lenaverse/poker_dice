@@ -1,5 +1,5 @@
 """ Testing for poker_dice.py """
-from poker_dice import calculate_points, determine_winner
+from poker_dice import calculate_points, determine_winner, handle_draw
 
 """ Test for the calculate_points function. """
 
@@ -53,3 +53,10 @@ def test_player_wins_3():
 
 def test_player_wins_4():
     assert "You win!" in determine_winner([2, 3, 4, 5, 6], [1, 2, 3, 4, 5])
+
+
+""" Test handle_draw function """
+
+
+def test_handle_draw_true_draw():
+    assert handle_draw([1, 2, 3, 4, 5], [5, 4, 3, 2, 1]) == "Draw!"
