@@ -52,16 +52,6 @@ user_hand = []
 
 ai_hand = []
 
-score_chart = {
-    "Five of a kind": 50,
-    "Four of a kind": 30,
-    "Full house": 20,
-    "Three of a kind": 15,
-    "Two pairs": 5,
-    "One pair": 2,
-    "Highest ranking die": 1
-}
-
 
 def roll_dice(dice_num: int = 5) -> list[int]:
     roll = []
@@ -74,17 +64,20 @@ def roll_dice(dice_num: int = 5) -> list[int]:
 
 def is_player_turn() -> bool:
 
-    print("Welcome to Poker dice! This your starting hand: ")
+    print("Welcome to Poker dice! This is your starting hand: ")
     user_hand = roll_dice()
     print(user_hand)
 
     num_rolls = 1
     while True:
         if num_rolls == 3:
+            print(
+                f"You can't reroll anymore! Your score is {calculate_points(user_hand)}.")
             return False
 
         player_choice = input("What would you like to do? (Reroll/End turn): ")
         if player_choice.lower() == "end turn":
+            print(f"Your score is {calculate_points(user_hand)}.")
             return False
         elif player_choice.lower() == "reroll":
             player_choice_reroll = input(
@@ -106,5 +99,45 @@ def is_player_turn() -> bool:
             print("Please enter a valid option.")
 
 
-if __name__ == "__main__":
+def ai_turn() -> bool:
+    print("COMPUTER TURN. This is their starting hand: ")
+    ai_hand = roll_dice()
+    print(ai_hand)
+
+
+def calculate_points(dice_hand: list[int]) -> int:
+    score_chart = {
+        "Five of a kind": 50,
+        "Four of a kind": 30,
+        "Full house": 20,
+        "Three of a kind": 15,
+        "Two pairs": 5,
+        "One pair": 2,
+        "Highest ranking die": 1
+    }
+
+    if len(set(dice_hand)) == 1:
+        return score_chart["Five of a kind"]
+
+    if any(dice_hand.count(roll) == 4 for roll in dice_hand):
+        return score_chart["Four of a kind"]
+
+    if any(dice_hand.count(roll) == 3 for roll in dice_hand):
+        if len(set(dice_hand)) == 2:
+            return score_chart["Full house"]
+        return score_chart["Three of a kind"]
+
+    if any(dice_hand.count(roll) == 2 for roll in dice_hand):
+        if len(set(dice_hand)) == 3:
+            return score_chart["Two pairs"]
+        return score_chart["One pair"]
+    return score_chart["Highest ranking die"]
+
+
+def play() -> None:
+
     is_player_turn()
+
+
+if __name__ == "__main__":
+    play()
