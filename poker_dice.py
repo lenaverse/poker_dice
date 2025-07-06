@@ -50,6 +50,7 @@ def roll_dice(dice_num: int = 5) -> list[int]:
 def is_player_turn() -> bool:
 
     print("Welcome to Poker dice! This is your starting hand: ")
+    global user_hand
     user_hand = roll_dice()
     print(user_hand)
 
@@ -85,8 +86,9 @@ def is_player_turn() -> bool:
 
 
 def is_ai_turn() -> bool:
-    print("-"*10)
+    print("-"*50)
     print("COMPUTER TURN. This is their starting hand: ")
+    global ai_hand
     ai_hand = roll_dice()
     print(ai_hand)
     num_rolls = 1
@@ -165,7 +167,6 @@ def play() -> None:
     is_player_turn()
     is_ai_turn()
 
-    print(f"USER HAND = {user_hand}. AI HAND = {ai_hand}")
     print(determine_winner(user_hand, ai_hand))
 
 
