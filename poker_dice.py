@@ -1,23 +1,4 @@
 """
-POKER DICE
-
-User vs computer will compete to get the best possible dice hand:
-
-FIVE OF A KIND (4-4-4-4-4)  -> 50 points
-FOUR OF A KIND (3-3-3-3-6)  -> 30 points
-FULL HOUSE (5-5-5-2-2)      -> 20 points
-THREE OF A KIND (1-1-1-3-4) -> 15 points
-TWO PAIRS (2-2-5-5-4)       -> 5 points
-ONE PAIR (4-4-1-2-6)        -> 2 points
-HIGHEST RANKING DIE         -> 1 point
-
-Each player gets three rolls. They can choose to reroll any number of dice.
-They can also choose to only roll once or twice if they're happy
-with the dice hand.
-
-"""
-
-"""
 USER TURN
 - Roll dice and store in [hand]
 - Display score
@@ -51,6 +32,10 @@ from random import choice
 user_hand = []
 
 ai_hand = []
+
+WIN_MESSAGE = "You win!"
+LOSE_MESSAGE = "You lose!"
+DRAW_MESSAGE = "Draw!"
 
 
 def roll_dice(dice_num: int = 5) -> list[int]:
@@ -99,10 +84,39 @@ def is_player_turn() -> bool:
             print("Please enter a valid option.")
 
 
-def ai_turn() -> bool:
+def is_ai_turn() -> bool:
+    print("-"*10)
     print("COMPUTER TURN. This is their starting hand: ")
     ai_hand = roll_dice()
     print(ai_hand)
+    num_rolls = 1
+
+    while True:
+        if num_rolls == 3:
+            print(
+                f"The computer can't reroll anymore! Their score is {calculate_points(ai_hand)}.")
+            return False
+        if calculate_points(ai_hand) == 50:
+            print("The computer chooses not to reroll.")
+            print(f"The computer's score is {calculate_points(ai_hand)}.")
+            return False
+
+        if len(set(ai_hand)) == 5:
+            print("The computer chooses to reroll the whole hand.")
+            ai_hand = roll_dice()
+            print(f"This is the computer's hand: {ai_hand}")
+            num_rolls += 1
+        else:
+            if len([roll for roll in ai_hand if ai_hand.count(roll) > 1]) == 5:
+                print("The computer decides to keep their hand.")
+                print(f"This is the computer's hand: {ai_hand}")
+                return False
+
+            print("The computer chooses to reroll some dice.")
+            ai_hand = [roll for roll in ai_hand if ai_hand.count(roll) > 1]
+            ai_hand.extend(roll_dice(5 - len(ai_hand)))
+            print(f"This is the computer's hand: {ai_hand}")
+            num_rolls += 1
 
 
 def calculate_points(dice_hand: list[int]) -> int:
@@ -134,9 +148,25 @@ def calculate_points(dice_hand: list[int]) -> int:
     return score_chart["Highest ranking die"]
 
 
+def determine_winner(player_hand: list[int], ai_hand: list[int]) -> str:
+    player_points = calculate_points(player_hand)
+    ai_points = calculate_points(ai_hand)
+
+    results = f"You scored {player_points}. The computer scored {ai_points}. "
+    if player_points > ai_points:
+        return results + WIN_MESSAGE
+    if player_points == ai_points:
+        return results + DRAW_MESSAGE
+    return results + DRAW_MESSAGE
+
+
 def play() -> None:
 
     is_player_turn()
+    is_ai_turn()
+
+    print(f"USER HAND = {user_hand}. AI HAND = {ai_hand}")
+    print(determine_winner(user_hand, ai_hand))
 
 
 if __name__ == "__main__":

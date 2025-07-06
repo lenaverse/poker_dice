@@ -1,5 +1,7 @@
 """ Testing for poker_dice.py """
-from poker_dice import calculate_points
+from poker_dice import calculate_points, determine_winner
+
+""" Test for the calculate_points function. """
 
 
 def test_calculate_points_five_kind():
@@ -28,3 +30,26 @@ def test_calculate_points_one_pair():
 
 def test_calculate_points_highest_die():
     assert calculate_points([1, 2, 3, 4, 5]) == 1
+
+
+""" Tests for the determine_winner function. """
+
+
+def test_player_wins_1():
+    assert "You win!" in determine_winner([5, 5, 5, 5, 5], [1, 2, 3, 4, 5])
+
+
+def test_player_wins_2():
+    assert "You win!" in determine_winner([5, 5, 5, 5, 5], [5, 5, 5, 5, 2])
+
+
+def test_player_wins_3():
+    assert "You win!" in determine_winner([5, 5, 5, 4, 3], [5, 5, 6, 6, 2])
+
+
+# Test fails - there should not be draws unless both players have the
+# exact same numbers
+
+
+def test_player_wins_4():
+    assert "You win!" in determine_winner([2, 3, 4, 5, 6], [1, 2, 3, 4, 5])
